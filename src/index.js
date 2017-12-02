@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from "react-dom";
 import Grid from "./components/grid";
+import Buttons from "./components/buttons";
 import './index.css';
 
 class App extends Component {
@@ -24,7 +25,7 @@ class App extends Component {
     });
   }
 
-  seed = () => {
+  populate = () => {
     let gridClone = arrayClone(this.state.gridFull);
     for(var i=0; i < this.rows; i++) {
       for (var j = 0; j < this.cols; j++) {
@@ -41,6 +42,28 @@ class App extends Component {
   playButton = () => {
     clearInterval(this.interval);
     this.interval = setInterval(this.play, this.speed);
+  }
+
+  pauseButton = () => {
+    clearInterval(this.interval);
+  }
+
+  clear = () => {
+    this.setState({
+      gridFull: Array(this.rows).fill(Array(this.cols).fill(false)),
+      generation: 0
+    });
+    this.pauseButton();
+  }
+
+  slow = () => {
+    this.speed = 1000;
+    this.playButton();
+  }
+
+  fast = () => {
+    this.speed = 100;
+    this.playButton();
   }
 
   play = () => {
@@ -69,8 +92,25 @@ class App extends Component {
     })
   }
 
+  gridSize = (size) => {
+    switch (size) {
+      case "1":
+        this.rows = 10;
+        this.cols = 20;
+        break;
+      case "2":
+        this.rows = 30;
+        this.cols = 50;
+        break;
+      default:
+        this.rows = 50;
+        this.cols = 70;
+    }
+    this.clear();
+  }
+
   componentDidMount() {
-    this.seed();
+    this.populate();
     this.playButton();  
   }
 
@@ -78,6 +118,7 @@ class App extends Component {
     return (
       <div>
         <h1>Game of Life</h1>
+        <Buttons playButton={this.playButton} pauseButton={this.pauseButton} clear={this.clear} slow={this.slow} fast={this.fast} populate={this.populate} gridSize={this.gridSize} />
         <Grid gridFull={ this.state.gridFull } rows={ this.rows } cols={ this.cols } selectBox={ this.selectBox }/>
         <h2>Generations: { this.state.generation } </h2>
       </div>
